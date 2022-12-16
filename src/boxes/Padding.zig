@@ -22,12 +22,18 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints) anyerror!void {
         return;
     }
 
+    const child_max = Size{
+        .width = cons.max.width - self.padding * 2,
+        .height = cons.max.height - self.padding * 2,
+    };
     const child_cons = Constraints{
-        .min = cons.min,
-        .max = .{
-            .width = cons.max.width - self.padding * 2,
-            .height = cons.max.height - self.padding * 2,
+        .min = .{
+            // ensure that we don't get incorrect constraints when the
+            // padded constraints are smaller than our minimum
+            .width = std.math.min(cons.min.width, child_max.width),
+            .height = std.math.min(cons.min.height, child_max.height),
         },
+        .max = child_max,
     };
     try self.child.layout(ctx, child_cons);
     try child_cons.assertFits(self.child.data.size);
@@ -73,4 +79,15 @@ test "overflow" {
 
     const fctx = try root.layout();
     try std.testing.expect(fctx.overflow);
+}
+
+test "tight constraints" {
+    const cons = Constraints.tight(.{ .width = 10, .height = 10 });
+    var b = Simple{};
+    var padding = Self{ .child = b.box(), .padding = 1 };
+
+    var ctx = LayoutCtx{};
+    try padding.box().layout(&ctx, cons);
+
+    try std.testing.expect(!ctx.overflow);
 }
