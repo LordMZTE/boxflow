@@ -1,0 +1,2 @@
+x: usize,
+y: usize,

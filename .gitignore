@@ -1,0 +1,9 @@
+# Zig
+zig-*
+
+# Packages
+deps.zig
+
+# Gyro
+.gyro/
+gyro.lock
