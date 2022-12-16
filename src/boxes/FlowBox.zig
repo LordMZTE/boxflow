@@ -5,6 +5,7 @@ const std = @import("std");
 const Box = @import("../Box.zig");
 const BoxData = @import("../BoxData.zig");
 const Clamped = @import("Clamped.zig");
+const Contracted = @import("Contracted.zig");
 const Constraints = @import("../Constraints.zig");
 const LayoutCtx = @import("../LayoutCtx.zig");
 const Position = @import("../Position.zig");
@@ -48,8 +49,6 @@ pub fn deinit(self: *Self) void {
 }
 
 fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints) anyerror!void {
-    // TODO: implement horizontal FlowBox
-
     switch (self.direction) {
         .vertical => {
             // the maximum width of the children
@@ -312,13 +311,8 @@ test "2 vertical boxes with equal flex" {
     var box_1 = Simple{};
     var box_2 = Simple{};
 
-    const clamp_cons = Constraints{
-        .min = .{ .width = 0, .height = 0 },
-        .max = .{ .width = 5, .height = 1 },
-    };
-
-    var clamp_1 = Clamped{ .child = box_1.box(), .constraints = clamp_cons };
-    var clamp_2 = Clamped{ .child = box_2.box(), .constraints = clamp_cons };
+    var clamp_1 = Contracted{ .child = box_1.box(), .axis = .vertical };
+    var clamp_2 = Contracted{ .child = box_2.box(), .axis = .vertical };
 
     clamp_1.data.flex_expand = 1;
     clamp_2.data.flex_expand = 1;
@@ -330,7 +324,7 @@ test "2 vertical boxes with equal flex" {
     );
     defer fbox.deinit();
 
-    var root = Root{ .root_box = fbox.box(), .size = .{ .width = 10, .height = 10 } };
+    var root = Root{ .root_box = fbox.box(), .size = .{ .width = 5, .height = 10 } };
     const fctx = try root.layout();
 
     try std.testing.expect(!fctx.overflow);
