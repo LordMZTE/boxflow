@@ -13,10 +13,12 @@ child: Box,
 
 const Self = @This();
 
-fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints) anyerror!void {
-    const child_cons = Constraints.tight(cons.max);
-    try self.child.layout(ctx, child_cons);
-    try child_cons.assertFits(self.child.data.size);
+fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) anyerror!void {
+    if (final_pass) {
+        const child_cons = Constraints.tight(cons.max);
+        try self.child.layout(ctx, child_cons, true);
+        try child_cons.assertFits(self.child.data.size);
+    }
 
     self.data.size = cons.max;
 }

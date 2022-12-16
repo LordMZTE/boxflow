@@ -24,7 +24,7 @@ child: Box,
 
 const Self = @This();
 
-fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints) anyerror!void {
+fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) anyerror!void {
     const child_cons = switch (self.axis) {
         .horizontal => Constraints{
             .min = cons.min,
@@ -43,8 +43,10 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints) anyerror!void {
         .both => Constraints.tight(cons.min),
     };
 
-    try self.child.layout(ctx, child_cons);
-    try child_cons.assertFits(self.child.data.size);
+    if (final_pass) {
+        try self.child.layout(ctx, child_cons, true);
+        try child_cons.assertFits(self.child.data.size);
+    }
 
     self.data.size = child_cons.max;
 }

@@ -11,7 +11,7 @@ const Size = @import("Size.zig");
 const Position = @import("Position.zig");
 const BoxData = @import("BoxData.zig");
 
-pub const LayoutFn = fn (*anyopaque, *LayoutCtx, Constraints) anyerror!void;
+pub const LayoutFn = fn (*anyopaque, *LayoutCtx, Constraints, bool) anyerror!void;
 pub const PositionFn = fn (*anyopaque, *LayoutCtx, Position) void;
 
 ctx: *anyopaque,
@@ -32,7 +32,7 @@ pub fn init(
     comptime T: type,
     ctx: *T,
     data: *BoxData,
-    layoutFn: fn (*T, *LayoutCtx, Constraints) anyerror!void,
+    layoutFn: fn (*T, *LayoutCtx, Constraints, bool) anyerror!void,
     positionFn: fn (*T, *LayoutCtx, Position) void,
 ) Self {
     return .{
@@ -53,9 +53,20 @@ pub fn init(
 /// After the box has determined its position, it should set the
 /// `pos` field of its `BoxData` accordingly.
 ///
-/// This function may be called multiple times during layouting.
-pub fn layout(self: *const Self, ctx: *LayoutCtx, constraints: Constraints) anyerror!void {
-    return self.layoutFn(self.ctx, ctx, constraints);
+/// The `final_pass` parameter allows for optimization. If the parent container
+/// needs to do multiple layout passes, the Box can avoid layouting children fully if
+/// there will be more passes later on.
+/// For example, FlowBox sets this to false for the initial pass.
+///
+/// This function may be called multiple times during layouting,
+/// but only once with `final_pass` set to true.
+pub fn layout(
+    self: *const Self,
+    ctx: *LayoutCtx,
+    constraints: Constraints,
+    final_pass: bool,
+) anyerror!void {
+    return self.layoutFn(self.ctx, ctx, constraints, final_pass);
 }
 
 /// This is called by the parent after layouting is complete. A Box implementing this

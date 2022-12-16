@@ -13,8 +13,9 @@ data: BoxData = .{},
 
 const Self = @This();
 
-fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints) anyerror!void {
+fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) anyerror!void {
     _ = ctx;
+    _ = final_pass;
     self.data.size = cons.max;
 }
 

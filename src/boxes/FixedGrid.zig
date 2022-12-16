@@ -25,20 +25,22 @@ children: []const Box,
 
 const Self = @This();
 
-fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints) anyerror!void {
-    const rows = @divExact(self.children.len, self.cols);
+fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) anyerror!void {
+    if (final_pass) {
+        const rows = @divExact(self.children.len, self.cols);
 
-    const col_width = cons.max.width / self.cols;
-    const row_height = cons.max.height / rows;
+        const col_width = cons.max.width / self.cols;
+        const row_height = cons.max.height / rows;
 
-    const child_cons = Constraints.tight(.{
-        .width = col_width,
-        .height = row_height,
-    });
+        const child_cons = Constraints.tight(.{
+            .width = col_width,
+            .height = row_height,
+        });
 
-    for (self.children) |child| {
-        try child.layout(ctx, child_cons);
-        try child_cons.assertFits(child.data.size);
+        for (self.children) |child| {
+            try child.layout(ctx, child_cons, true);
+            try child_cons.assertFits(child.data.size);
+        }
     }
 
     self.data.size = cons.max;

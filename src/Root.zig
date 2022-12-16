@@ -22,7 +22,7 @@ pub fn layout(self: *Self) !LayoutCtx {
 
     var ctx = LayoutCtx{};
 
-    try self.root_box.layout(&ctx, constraints);
+    try self.root_box.layout(&ctx, constraints, true);
     self.root_box.position(&ctx, .{ .x = 0, .y = 0 });
 
     return ctx;

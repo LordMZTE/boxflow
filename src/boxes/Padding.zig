@@ -16,7 +16,7 @@ padding: usize,
 
 const Self = @This();
 
-fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints) anyerror!void {
+fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) anyerror!void {
     if (cons.max.width <= self.padding * 2 or cons.max.height <= self.padding * 2) {
         ctx.overflow = true;
         return;
@@ -35,7 +35,7 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints) anyerror!void {
         },
         .max = child_max,
     };
-    try self.child.layout(ctx, child_cons);
+    try self.child.layout(ctx, child_cons, final_pass);
     try child_cons.assertFits(self.child.data.size);
 
     self.data.size = .{
@@ -87,7 +87,7 @@ test "tight constraints" {
     var padding = Self{ .child = b.box(), .padding = 1 };
 
     var ctx = LayoutCtx{};
-    try padding.box().layout(&ctx, cons);
+    try padding.box().layout(&ctx, cons, true);
 
     try std.testing.expect(!ctx.overflow);
 }

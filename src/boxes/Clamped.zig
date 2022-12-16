@@ -16,13 +16,13 @@ constraints: Constraints,
 
 const Self = @This();
 
-fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints) anyerror!void {
+fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) anyerror!void {
     const child_constraints = Constraints{
         .min = cons.clamp(self.constraints.min),
         .max = cons.clamp(self.constraints.max),
     };
 
-    try self.child.layout(ctx, child_constraints);
+    try self.child.layout(ctx, child_constraints, final_pass);
     try child_constraints.assertFits(self.child.data.size);
 
     self.data.size = self.child.data.size;

@@ -48,7 +48,7 @@ pub fn deinit(self: *Self) void {
     self.* = undefined;
 }
 
-fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints) anyerror!void {
+fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) anyerror!void {
     switch (self.direction) {
         .vertical => {
             // the maximum width of the children
@@ -62,7 +62,7 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints) anyerror!void {
                     child_cons.max.height -|= cur_pos;
                     child_cons.min.height -|= cur_pos;
 
-                    try child.layout(ctx, child_cons);
+                    try child.layout(ctx, child_cons, false);
                     try child_cons.assertFits(child.data.size);
 
                     cur_pos += child.data.size.height;
@@ -111,8 +111,10 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints) anyerror!void {
                             .height = child_height,
                         });
 
-                        try child.layout(ctx, child_cons);
-                        try child_cons.assertFits(child.data.size);
+                        if (final_pass) {
+                            try child.layout(ctx, child_cons, true);
+                            try child_cons.assertFits(child.data.size);
+                        }
                     }
 
                     self.child_offsets[i] = cur_pos;
@@ -139,7 +141,7 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints) anyerror!void {
                     child_cons.max.width -|= cur_pos;
                     child_cons.min.width -|= cur_pos;
 
-                    try child.layout(ctx, child_cons);
+                    try child.layout(ctx, child_cons, false);
                     try child_cons.assertFits(child.data.size);
 
                     cur_pos += child.data.size.width;
@@ -188,8 +190,10 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints) anyerror!void {
                             .height = child.data.size.height,
                         });
 
-                        try child.layout(ctx, child_cons);
-                        try child_cons.assertFits(child.data.size);
+                        if (final_pass) {
+                            try child.layout(ctx, child_cons, true);
+                            try child_cons.assertFits(child.data.size);
+                        }
                     }
 
                     self.child_offsets[i] = cur_pos;

@@ -21,14 +21,14 @@ child: Box,
 
 const Self = @This();
 
-fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints) anyerror!void {
+fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) anyerror!void {
     const child_cons = Constraints{
         // we take away the minimum constraint, because it's fine if the child is smaller
         .min = .{ .width = 0, .height = 0 },
         .max = cons.max,
     };
 
-    try self.child.layout(ctx, child_cons);
+    try self.child.layout(ctx, child_cons, final_pass);
     try child_cons.assertFits(self.child.data.size);
 
     // we try to get as close to the child's size as fits within the constraints
