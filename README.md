@@ -3,6 +3,8 @@
 Boxflow is a layout engine implementing flexboxes as well as others in Zig.
 It aims to be universally usable for applications such as GUIs and window managers.
 
+NOTE: Boxflow is alpha software. Expect bugs and breaking changes!
+
 # Usage
 
 To compile Boxflow, you need to use the latest master version of the Zig compiler.
