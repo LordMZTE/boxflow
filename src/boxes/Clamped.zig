@@ -6,7 +6,6 @@ const BoxData = @import("../BoxData.zig");
 const Constraints = @import("../Constraints.zig");
 const LayoutCtx = @import("../LayoutCtx.zig");
 const Position = @import("../Position.zig");
-const Root = @import("../Root.zig");
 const Simple = @import("Simple.zig");
 const Size = @import("../Size.zig");
 
@@ -48,11 +47,17 @@ test "limit size" {
         },
     };
 
-    var root = Root{ .root_box = lim.box(), .size = .{ .width = 10, .height = 10 } };
+    var ctx = LayoutCtx{ .alloc = std.testing.allocator };
+    try @import("../main.zig").layout(
+        lim.box(),
+        &ctx,
+        .{
+            .min = .{ .width = 0, .height = 0 },
+            .max = .{ .width = 10, .height = 10 },
+        },
+    );
 
-    const fctx = try root.layout(std.testing.allocator);
-
-    try std.testing.expect(!fctx.overflow);
+    try std.testing.expect(!ctx.overflow);
     try std.testing.expectEqual(Size{ .width = 5, .height = 5 }, b.data.size);
 }
 
@@ -67,10 +72,16 @@ test "useless limit" {
         },
     };
 
-    var root = Root{ .root_box = lim.box(), .size = .{ .width = 5, .height = 5 } };
+    var ctx = LayoutCtx{ .alloc = std.testing.allocator };
+    try @import("../main.zig").layout(
+        lim.box(),
+        &ctx,
+        .{
+            .min = .{ .width = 0, .height = 0 },
+            .max = .{ .width = 5, .height = 5 },
+        },
+    );
 
-    const fctx = try root.layout(std.testing.allocator);
-
-    try std.testing.expect(!fctx.overflow);
+    try std.testing.expect(!ctx.overflow);
     try std.testing.expectEqual(Size{ .width = 5, .height = 5 }, b.data.size);
 }

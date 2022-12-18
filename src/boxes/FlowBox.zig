@@ -9,7 +9,6 @@ const Contracted = @import("Contracted.zig");
 const Constraints = @import("../Constraints.zig");
 const LayoutCtx = @import("../LayoutCtx.zig");
 const Position = @import("../Position.zig");
-const Root = @import("../Root.zig");
 const Simple = @import("Simple.zig");
 const Size = @import("../Size.zig");
 
@@ -246,8 +245,14 @@ test "2 vertical boxes with fixed size" {
     );
     defer fbox.deinit();
 
-    var root = Root{ .root_box = fbox.box(), .size = .{ .width = 10, .height = 20 } };
-    try root.layoutWithContext(&ctx);
+    try @import("../main.zig").layout(
+        fbox.box(),
+        &ctx,
+        .{
+            .min = .{ .width = 0, .height = 0 },
+            .max = .{ .width = 10, .height = 20 },
+        },
+    );
 
     try std.testing.expect(!ctx.overflow);
 
@@ -290,8 +295,14 @@ test "2 horizontal boxes with fixed size" {
     );
     defer fbox.deinit();
 
-    var root = Root{ .root_box = fbox.box(), .size = .{ .width = 20, .height = 10 } };
-    try root.layoutWithContext(&ctx);
+    try @import("../main.zig").layout(
+        fbox.box(),
+        &ctx,
+        .{
+            .min = .{ .width = 0, .height = 0 },
+            .max = .{ .width = 10, .height = 20 },
+        },
+    );
 
     try std.testing.expect(!ctx.overflow);
 
@@ -332,8 +343,14 @@ test "2 vertical boxes with equal flex" {
     );
     defer fbox.deinit();
 
-    var root = Root{ .root_box = fbox.box(), .size = .{ .width = 5, .height = 10 } };
-    try root.layoutWithContext(&ctx);
+    try @import("../main.zig").layout(
+        fbox.box(),
+        &ctx,
+        .{
+            .min = .{ .width = 0, .height = 0 },
+            .max = .{ .width = 5, .height = 10 },
+        },
+    );
 
     try std.testing.expect(!ctx.overflow);
 
@@ -378,8 +395,14 @@ test "flex and fixed combo" {
     );
     defer fbox.deinit();
 
-    var root = Root{ .root_box = fbox.box(), .size = .{ .width = 10, .height = 10 } };
-    try root.layoutWithContext(&ctx);
+    try @import("../main.zig").layout(
+        fbox.box(),
+        &ctx,
+        .{
+            .min = .{ .width = 0, .height = 0 },
+            .max = .{ .width = 10, .height = 10 },
+        },
+    );
 
     try std.testing.expect(!ctx.overflow);
 

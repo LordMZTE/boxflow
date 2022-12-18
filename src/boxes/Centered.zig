@@ -12,7 +12,6 @@ const Constraints = @import("../Constraints.zig");
 const Expanded = @import("Expanded.zig");
 const LayoutCtx = @import("../LayoutCtx.zig");
 const Position = @import("../Position.zig");
-const Root = @import("../Root.zig");
 const Simple = @import("Simple.zig");
 const Size = @import("../Size.zig");
 
@@ -61,13 +60,20 @@ test "clamped centered box" {
     };
     var centered = Self{ .child = clamped.box() };
 
-    // we need to use an Expanded here so the Centered is bigger than its child.
+    // We need to use an Expanded here so the Centered is bigger than its child.
     var expanded = Expanded{ .child = centered.box() };
 
-    var root = Root{ .root_box = expanded.box(), .size = .{ .width = 8, .height = 8 } };
-    const fctx = try root.layout(std.testing.allocator);
+    var ctx = LayoutCtx{ .alloc = std.testing.allocator };
+    try @import("../main.zig").layout(
+        expanded.box(),
+        &ctx,
+        .{
+            .min = .{ .width = 0, .height = 0 },
+            .max = .{ .width = 8, .height = 8 },
+        },
+    );
 
-    try std.testing.expect(!fctx.overflow);
+    try std.testing.expect(!ctx.overflow);
 
     try std.testing.expectEqual(
         BoxData{

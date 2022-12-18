@@ -6,7 +6,6 @@ const BoxData = @import("../BoxData.zig");
 const Constraints = @import("../Constraints.zig");
 const LayoutCtx = @import("../LayoutCtx.zig");
 const Position = @import("../Position.zig");
-const Root = @import("../Root.zig");
 const Simple = @import("Simple.zig");
 const Size = @import("../Size.zig");
 
@@ -58,10 +57,17 @@ test "simple layout" {
 
     var padded = Self{ .child = sbox.box(), .padding = 2 };
 
-    var root = Root{ .root_box = padded.box(), .size = .{ .width = 10, .height = 10 } };
-    const fctx = try root.layout(std.testing.allocator);
+    var ctx = LayoutCtx{ .alloc = std.testing.allocator };
+    try @import("../main.zig").layout(
+        padded.box(),
+        &ctx,
+        .{
+            .min = .{ .width = 0, .height = 0 },
+            .max = .{ .width = 10, .height = 10 },
+        },
+    );
 
-    try std.testing.expect(!fctx.overflow);
+    try std.testing.expect(!ctx.overflow);
     try std.testing.expectEqual(
         BoxData{
             .pos = .{ .x = 2, .y = 2 },
@@ -75,10 +81,17 @@ test "overflow" {
     var child = Simple{};
     var padded = Self{ .child = child.box(), .padding = 2 };
 
-    var root = Root{ .root_box = padded.box(), .size = .{ .width = 1, .height = 1 } };
+    var ctx = LayoutCtx{ .alloc = std.testing.allocator };
+    try @import("../main.zig").layout(
+        padded.box(),
+        &ctx,
+        .{
+            .min = .{ .width = 0, .height = 0 },
+            .max = .{ .width = 1, .height = 1 },
+        },
+    );
 
-    const fctx = try root.layout(std.testing.allocator);
-    try std.testing.expect(fctx.overflow);
+    try std.testing.expect(ctx.overflow);
 }
 
 test "tight constraints" {
