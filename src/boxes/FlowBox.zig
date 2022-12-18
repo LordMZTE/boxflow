@@ -29,13 +29,13 @@ child_offsets: []usize,
 
 const Self = @This();
 
-pub fn init(alloc: std.mem.Allocator, direction: Direction, children: []const Box) !Self {
+pub fn init(ctx: *LayoutCtx, direction: Direction, children: []const Box) !Self {
     var self = .{
         .children = children,
         .direction = direction,
-        .alloc = alloc,
+        .alloc = ctx.alloc,
 
-        .child_offsets = try alloc.alloc(usize, children.len),
+        .child_offsets = try ctx.alloc.alloc(usize, children.len),
     };
 
     std.mem.set(usize, self.child_offsets, 0);
@@ -79,8 +79,8 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) any
                 cur_pos = 0;
 
                 // the amount of extra space that will be added to the flex boxes
-                const flex_extra_space = try self.alloc.alloc(?f64, self.children.len);
-                defer self.alloc.free(flex_extra_space);
+                const flex_extra_space = try ctx.alloc.alloc(?f64, self.children.len);
+                defer ctx.alloc.free(flex_extra_space);
                 std.mem.set(?f64, flex_extra_space, null);
 
                 var flex_sum: f64 = 0;
@@ -158,8 +158,8 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) any
                 cur_pos = 0;
 
                 // the amount of extra space that will be added to the flex boxes
-                const flex_extra_space = try self.alloc.alloc(?f64, self.children.len);
-                defer self.alloc.free(flex_extra_space);
+                const flex_extra_space = try ctx.alloc.alloc(?f64, self.children.len);
+                defer ctx.alloc.free(flex_extra_space);
                 std.mem.set(?f64, flex_extra_space, null);
 
                 var flex_sum: f64 = 0;
@@ -226,6 +226,8 @@ pub fn box(self: *Self) Box {
 }
 
 test "2 vertical boxes with fixed size" {
+    var ctx = LayoutCtx{ .alloc = std.testing.allocator };
+
     var box_1 = Simple{};
     var box_2 = Simple{};
 
@@ -238,16 +240,16 @@ test "2 vertical boxes with fixed size" {
     var clamp_2 = Clamped{ .child = box_2.box(), .constraints = clamp_cons };
 
     var fbox = try Self.init(
-        std.testing.allocator,
+        &ctx,
         .vertical,
         &.{ clamp_1.box(), clamp_2.box() },
     );
     defer fbox.deinit();
 
     var root = Root{ .root_box = fbox.box(), .size = .{ .width = 10, .height = 20 } };
-    const fctx = try root.layout();
+    try root.layoutWithContext(&ctx);
 
-    try std.testing.expect(!fctx.overflow);
+    try std.testing.expect(!ctx.overflow);
 
     try std.testing.expectEqual(
         Size{ .width = 5, .height = 10 },
@@ -269,6 +271,7 @@ test "2 vertical boxes with fixed size" {
 }
 
 test "2 horizontal boxes with fixed size" {
+    var ctx = LayoutCtx{ .alloc = std.testing.allocator };
     var box_1 = Simple{};
     var box_2 = Simple{};
 
@@ -281,16 +284,16 @@ test "2 horizontal boxes with fixed size" {
     var clamp_2 = Clamped{ .child = box_2.box(), .constraints = clamp_cons };
 
     var fbox = try Self.init(
-        std.testing.allocator,
+        &ctx,
         .horizontal,
         &.{ clamp_1.box(), clamp_2.box() },
     );
     defer fbox.deinit();
 
     var root = Root{ .root_box = fbox.box(), .size = .{ .width = 20, .height = 10 } };
-    const fctx = try root.layout();
+    try root.layoutWithContext(&ctx);
 
-    try std.testing.expect(!fctx.overflow);
+    try std.testing.expect(!ctx.overflow);
 
     try std.testing.expectEqual(
         Size{ .width = 10, .height = 5 },
@@ -312,6 +315,7 @@ test "2 horizontal boxes with fixed size" {
 }
 
 test "2 vertical boxes with equal flex" {
+    var ctx = LayoutCtx{ .alloc = std.testing.allocator };
     var box_1 = Simple{};
     var box_2 = Simple{};
 
@@ -322,16 +326,16 @@ test "2 vertical boxes with equal flex" {
     clamp_2.data.flex_expand = 1;
 
     var fbox = try Self.init(
-        std.testing.allocator,
+        &ctx,
         .vertical,
         &.{ clamp_1.box(), clamp_2.box() },
     );
     defer fbox.deinit();
 
     var root = Root{ .root_box = fbox.box(), .size = .{ .width = 5, .height = 10 } };
-    const fctx = try root.layout();
+    try root.layoutWithContext(&ctx);
 
-    try std.testing.expect(!fctx.overflow);
+    try std.testing.expect(!ctx.overflow);
 
     try std.testing.expectEqual(
         Size{ .width = 5, .height = 10 },
@@ -353,6 +357,7 @@ test "2 vertical boxes with equal flex" {
 }
 
 test "flex and fixed combo" {
+    var ctx = LayoutCtx{ .alloc = std.testing.allocator };
     var box_1 = Simple{};
     var box_2 = Simple{};
 
@@ -367,16 +372,16 @@ test "flex and fixed combo" {
     clamp_1.data.flex_expand = 1;
 
     var fbox = try Self.init(
-        std.testing.allocator,
+        &ctx,
         .vertical,
         &.{ clamp_1.box(), clamp_2.box() },
     );
     defer fbox.deinit();
 
     var root = Root{ .root_box = fbox.box(), .size = .{ .width = 10, .height = 10 } };
-    const fctx = try root.layout();
+    try root.layoutWithContext(&ctx);
 
-    try std.testing.expect(!fctx.overflow);
+    try std.testing.expect(!ctx.overflow);
 
     try std.testing.expectEqual(
         Size{ .width = 5, .height = 10 },

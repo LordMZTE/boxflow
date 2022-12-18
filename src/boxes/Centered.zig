@@ -65,7 +65,7 @@ test "clamped centered box" {
     var expanded = Expanded{ .child = centered.box() };
 
     var root = Root{ .root_box = expanded.box(), .size = .{ .width = 8, .height = 8 } };
-    const fctx = try root.layout();
+    const fctx = try root.layout(std.testing.allocator);
 
     try std.testing.expect(!fctx.overflow);
 

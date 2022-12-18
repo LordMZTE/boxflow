@@ -50,7 +50,7 @@ test "limit size" {
 
     var root = Root{ .root_box = lim.box(), .size = .{ .width = 10, .height = 10 } };
 
-    const fctx = try root.layout();
+    const fctx = try root.layout(std.testing.allocator);
 
     try std.testing.expect(!fctx.overflow);
     try std.testing.expectEqual(Size{ .width = 5, .height = 5 }, b.data.size);
@@ -69,7 +69,7 @@ test "useless limit" {
 
     var root = Root{ .root_box = lim.box(), .size = .{ .width = 5, .height = 5 } };
 
-    const fctx = try root.layout();
+    const fctx = try root.layout(std.testing.allocator);
 
     try std.testing.expect(!fctx.overflow);
     try std.testing.expectEqual(Size{ .width = 5, .height = 5 }, b.data.size);

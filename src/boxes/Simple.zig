@@ -32,7 +32,7 @@ test "simple layout" {
     var sbox = Self{};
 
     var root = Root{ .root_box = sbox.box(), .size = .{ .width = 10, .height = 10 } };
-    const fctx = try root.layout();
+    const fctx = try root.layout(std.testing.allocator);
 
     try std.testing.expect(!fctx.overflow);
     try std.testing.expectEqual(

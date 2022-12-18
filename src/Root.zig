@@ -14,16 +14,22 @@ const Self = @This();
 /// Performs the layouting of a box tree.
 ///
 /// Returns the final layout context.
-pub fn layout(self: *Self) !LayoutCtx {
+pub fn layout(self: *Self, alloc: std.mem.Allocator) !LayoutCtx {
+    var ctx = LayoutCtx{
+        .alloc = alloc,
+    };
+
+    try self.layoutWithContext(&ctx);
+
+    return ctx;
+}
+
+pub fn layoutWithContext(self: *Self, ctx: *LayoutCtx) !void {
     const constraints = Constraints{
         .min = .{ .width = 0, .height = 0 },
         .max = self.size,
     };
 
-    var ctx = LayoutCtx{};
-
-    try self.root_box.layout(&ctx, constraints, true);
-    self.root_box.position(&ctx, .{ .x = 0, .y = 0 });
-
-    return ctx;
+    try self.root_box.layout(ctx, constraints, true);
+    self.root_box.position(ctx, .{ .x = 0, .y = 0 });
 }

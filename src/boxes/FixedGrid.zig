@@ -83,7 +83,7 @@ test "2x2 simple grid" {
         .size = .{ .width = 10, .height = 10 },
     };
 
-    const fctx = try root.layout();
+    const fctx = try root.layout(std.testing.allocator);
 
     try std.testing.expect(!fctx.overflow);
 

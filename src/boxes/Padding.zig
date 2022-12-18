@@ -59,7 +59,7 @@ test "simple layout" {
     var padded = Self{ .child = sbox.box(), .padding = 2 };
 
     var root = Root{ .root_box = padded.box(), .size = .{ .width = 10, .height = 10 } };
-    const fctx = try root.layout();
+    const fctx = try root.layout(std.testing.allocator);
 
     try std.testing.expect(!fctx.overflow);
     try std.testing.expectEqual(
@@ -77,7 +77,7 @@ test "overflow" {
 
     var root = Root{ .root_box = padded.box(), .size = .{ .width = 1, .height = 1 } };
 
-    const fctx = try root.layout();
+    const fctx = try root.layout(std.testing.allocator);
     try std.testing.expect(fctx.overflow);
 }
 
@@ -86,7 +86,7 @@ test "tight constraints" {
     var b = Simple{};
     var padding = Self{ .child = b.box(), .padding = 1 };
 
-    var ctx = LayoutCtx{};
+    var ctx = LayoutCtx{ .alloc = std.testing.allocator };
     try padding.box().layout(&ctx, cons, true);
 
     try std.testing.expect(!ctx.overflow);
