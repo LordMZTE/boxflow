@@ -3,6 +3,7 @@ const std = @import("std");
 
 const Box = @import("../Box.zig");
 const BoxData = @import("../BoxData.zig");
+const ChildList = @import("../ChildList.zig");
 const Constraints = @import("../Constraints.zig");
 const LayoutCtx = @import("../LayoutCtx.zig");
 const Position = @import("../Position.zig");
@@ -32,8 +33,20 @@ fn position(self: *Self, ctx: *LayoutCtx, pos: Position) void {
     self.data.pos = pos;
 }
 
+fn children(self: *Self, ctx: *LayoutCtx) anyerror!?ChildList {
+    _ = ctx;
+    return .{ .boxes = @ptrCast([*]const Box, &self.child)[0..1] };
+}
+
 pub fn box(self: *Self) Box {
-    return Box.init(Self, self, &self.data, layout, position);
+    return Box.init(
+        Self,
+        self,
+        &self.data,
+        layout,
+        position,
+        children,
+    );
 }
 
 test "limit size" {

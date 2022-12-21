@@ -24,7 +24,14 @@ fn position(self: *Self, ctx: *LayoutCtx, pos: Position) void {
 }
 
 pub fn box(self: *Self) Box {
-    return Box.init(Self, self, &self.data, layout, position);
+    return Box.init(
+        Self,
+        self,
+        &self.data,
+        layout,
+        position,
+        null,
+    );
 }
 
 test "simple layout" {

@@ -5,20 +5,23 @@
 //! This type is dynamically dispatched, similarly to `std.mem.Allocator`.
 //! For some example implementations, see `LinearBox`.
 
+const BoxData = @import("BoxData.zig");
+const ChildList = @import("ChildList.zig");
 const Constraints = @import("Constraints.zig");
 const LayoutCtx = @import("LayoutCtx.zig");
-const Size = @import("Size.zig");
 const Position = @import("Position.zig");
-const BoxData = @import("BoxData.zig");
+const Size = @import("Size.zig");
 
 pub const LayoutFn = fn (*anyopaque, *LayoutCtx, Constraints, bool) anyerror!void;
 pub const PositionFn = fn (*anyopaque, *LayoutCtx, Position) void;
+pub const ChildrenFn = fn (*anyopaque, *LayoutCtx) anyerror!?ChildList;
 
 ctx: *anyopaque,
 data: *BoxData,
 
 layoutFn: *const LayoutFn,
 positionFn: *const PositionFn,
+childrenFn: ?*const ChildrenFn,
 
 const Self = @This();
 
@@ -34,6 +37,7 @@ pub fn init(
     data: *BoxData,
     layoutFn: fn (*T, *LayoutCtx, Constraints, bool) anyerror!void,
     positionFn: fn (*T, *LayoutCtx, Position) void,
+    childrenFn: ?fn (*T, *LayoutCtx) anyerror!?ChildList,
 ) Self {
     return .{
         .ctx = ctx,
@@ -41,6 +45,10 @@ pub fn init(
 
         .layoutFn = @ptrCast(*const LayoutFn, &layoutFn),
         .positionFn = @ptrCast(*const PositionFn, &positionFn),
+        .childrenFn = blk: {
+            const f = childrenFn orelse break :blk null;
+            break :blk @ptrCast(*const ChildrenFn, &f);
+        },
     };
 }
 
@@ -77,3 +85,10 @@ pub fn layout(
 pub fn position(self: *const Self, ctx: *LayoutCtx, pos: Position) void {
     self.positionFn(self.ctx, ctx, pos);
 }
+
+/// Get the children of this Box or null if there aren't any.
+pub fn children(self: *const Self, ctx: *LayoutCtx) !?ChildList {
+    const f = self.childrenFn orelse return null;
+    return f(self.ctx, ctx);
+}
+

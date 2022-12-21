@@ -4,6 +4,7 @@ const std = @import("std");
 
 const Box = @import("../Box.zig");
 const BoxData = @import("../BoxData.zig");
+const ChildList = @import("../ChildList.zig");
 const Clamped = @import("Clamped.zig");
 const Contracted = @import("Contracted.zig");
 const Constraints = @import("../Constraints.zig");
@@ -220,8 +221,20 @@ fn position(self: *Self, ctx: *LayoutCtx, pos: Position) void {
     self.data.pos = pos;
 }
 
+fn childrenF(self: *Self, ctx: *LayoutCtx) !?ChildList {
+    _ = ctx;
+    return .{ .boxes = self.children };
+}
+
 pub fn box(self: *Self) Box {
-    return Box.init(Self, self, &self.data, layout, position);
+    return Box.init(
+        Self,
+        self,
+        &self.data,
+        layout,
+        position,
+        childrenF,
+    );
 }
 
 test "2 vertical boxes with fixed size" {
@@ -244,6 +257,11 @@ test "2 vertical boxes with fixed size" {
         &.{ clamp_1.box(), clamp_2.box() },
     );
     defer fbox.deinit();
+
+    try std.testing.expectEqual(
+        @as(usize, 2),
+        (try fbox.box().children(&ctx)).?.boxes.len,
+    );
 
     try @import("../main.zig").layout(
         fbox.box(),

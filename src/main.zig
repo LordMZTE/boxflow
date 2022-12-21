@@ -11,6 +11,7 @@ pub const boxes = @import("boxes.zig");
 
 pub const Box = @import("Box.zig");
 pub const BoxData = @import("BoxData.zig");
+const ChildList = @import("ChildList.zig");
 pub const Constraints = @import("Constraints.zig");
 pub const LayoutCtx = @import("LayoutCtx.zig");
 pub const Position = @import("Position.zig");
