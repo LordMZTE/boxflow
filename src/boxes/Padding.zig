@@ -37,7 +37,9 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) any
         .max = child_max,
     };
     try self.child.layout(ctx, child_cons, final_pass);
-    try child_cons.assertFits(self.child.data.size);
+
+    if (!self.child.data.overflow)
+        try child_cons.assertFits(self.child.data.size);
 
     self.data.size = .{
         .width = self.child.data.size.width + self.padding * 2,

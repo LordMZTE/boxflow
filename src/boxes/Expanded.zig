@@ -18,7 +18,9 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) any
     if (final_pass) {
         const child_cons = Constraints.tight(cons.max);
         try self.child.layout(ctx, child_cons, true);
-        try child_cons.assertFits(self.child.data.size);
+
+        if (!self.child.data.overflow)
+            try child_cons.assertFits(self.child.data.size);
     }
 
     self.data.size = cons.max;

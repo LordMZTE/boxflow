@@ -29,6 +29,13 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) any
     };
 
     try self.child.layout(ctx, child_cons, final_pass);
+
+    if (self.child.data.overflow) {
+        // No need to recursively set overflow, the child should've already done that.
+        self.data.overflow = true;
+        return;
+    }
+
     try child_cons.assertFits(self.child.data.size);
 
     // we try to get as close to the child's size as fits within the constraints

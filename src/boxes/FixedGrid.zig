@@ -39,7 +39,8 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) any
 
         for (self.children) |child| {
             try child.layout(ctx, child_cons, true);
-            try child_cons.assertFits(child.data.size);
+            if (!child.data.overflow)
+                try child_cons.assertFits(child.data.size);
         }
     }
 
@@ -53,6 +54,9 @@ fn position(self: *Self, ctx: *LayoutCtx, pos: Position) void {
     const row_height = self.data.size.height / rows;
 
     for (self.children) |child, i| {
+        if (child.data.overflow)
+            continue;
+
         const x = (i % self.cols) * col_width;
         const y = @divFloor(i, rows) * row_height;
 

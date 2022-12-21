@@ -111,9 +111,11 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) any
                             .height = child_height,
                         });
 
+                        // TODO: really only layout children on the final pass?
                         if (final_pass) {
                             try child.layout(ctx, child_cons, true);
-                            try child_cons.assertFits(child.data.size);
+                            if (!child.data.overflow)
+                                try child_cons.assertFits(child.data.size);
                         }
                     }
 
@@ -190,9 +192,11 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) any
                             .height = child.data.size.height,
                         });
 
+                        // TODO: really only layout children on the final pass?
                         if (final_pass) {
                             try child.layout(ctx, child_cons, true);
-                            try child_cons.assertFits(child.data.size);
+                            if (!child.data.overflow)
+                                try child_cons.assertFits(child.data.size);
                         }
                     }
 
@@ -212,6 +216,9 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) any
 
 fn position(self: *Self, ctx: *LayoutCtx, pos: Position) void {
     for (self.children) |child, i| {
+        if (child.data.overflow)
+            continue;
+
         const child_pos = switch (self.direction) {
             .vertical => .{ .x = pos.x, .y = pos.y + self.child_offsets[i] },
             .horizontal => .{ .x = pos.x + self.child_offsets[i], .y = pos.y },

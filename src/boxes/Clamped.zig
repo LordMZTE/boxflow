@@ -23,6 +23,12 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) any
     };
 
     try self.child.layout(ctx, child_constraints, final_pass);
+
+    if (self.child.data.overflow) {
+        self.data.overflow = true;
+        return;
+    }
+
     try child_constraints.assertFits(self.child.data.size);
 
     self.data.size = self.child.data.size;
