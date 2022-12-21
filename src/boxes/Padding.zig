@@ -19,6 +19,7 @@ const Self = @This();
 fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) anyerror!void {
     if (cons.max.width <= self.padding * 2 or cons.max.height <= self.padding * 2) {
         ctx.overflow = true;
+        try self.box().setOverflow(ctx, true);
         return;
     }
 

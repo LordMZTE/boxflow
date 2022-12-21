@@ -105,7 +105,6 @@ pub fn children(self: *const Self, ctx: *LayoutCtx) !?ChildList {
 
 /// Sets the overflow flag for this Box as well as all children.
 pub fn setOverflow(self: *const Self, ctx: *LayoutCtx, val: bool) !void {
-    ctx.overflow = val;
     self.data.overflow = val;
     if (try self.children(ctx)) |ch| {
         defer ch.deinit();
