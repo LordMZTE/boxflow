@@ -77,7 +77,7 @@ pub fn layout(
     // Set the overflow flag if the size of the box is zero and this is the final pass.
     // Zero-sizes are allowed if there's another pass setting the sizes to a nonzero value.
     if (final_pass and constraints.max.height * constraints.max.width == 0) {
-        try self.setOverflow(ctx);
+        try self.setOverflow(ctx, true);
         return;
     }
 
@@ -104,13 +104,13 @@ pub fn children(self: *const Self, ctx: *LayoutCtx) !?ChildList {
 }
 
 /// Sets the overflow flag for this Box as well as all children.
-pub fn setOverflow(self: *const Self, ctx: *LayoutCtx) !void {
-    ctx.overflow = true;
-    self.data.overflow = true;
+pub fn setOverflow(self: *const Self, ctx: *LayoutCtx, val: bool) !void {
+    ctx.overflow = val;
+    self.data.overflow = val;
     if (try self.children(ctx)) |ch| {
         defer ch.deinit();
         for (ch.boxes) |child| {
-            try child.setOverflow(ctx);
+            try child.setOverflow(ctx, val);
         }
     }
 }

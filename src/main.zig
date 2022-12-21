@@ -18,6 +18,8 @@ pub const Position = @import("Position.zig");
 pub const Size = @import("Size.zig");
 
 pub fn layout(root_box: Box, ctx: *LayoutCtx, root_constraints: Constraints) !void {
+    // Reset the overflow in case it was set in previous passes.
+    try root_box.setOverflow(ctx, false);
     try root_box.layout(ctx, root_constraints, true);
     root_box.position(ctx, .{ .x = 0, .y = 0 });
 }
