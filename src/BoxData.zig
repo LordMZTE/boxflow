@@ -14,3 +14,8 @@ size: Size = .{ .width = 0, .height = 0 },
 /// possible size (adhering to constraints). This means that the limit of a box being exceeded
 /// is simply an overflow.
 flex_expand: usize = 0,
+
+/// A flag to indicate if this Box has not been laid out due to an overflow.
+/// If this is set, `pos` and `size` must be treated as invalid.
+/// All children of this Box must also have the flag set.
+overflow: bool = false,

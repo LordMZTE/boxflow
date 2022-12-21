@@ -74,6 +74,13 @@ pub fn layout(
     constraints: Constraints,
     final_pass: bool,
 ) anyerror!void {
+    // Set the overflow flag if the size of the box is zero and this is the final pass.
+    // Zero-sizes are allowed if there's another pass setting the sizes to a nonzero value.
+    if (final_pass and constraints.max.height * constraints.max.width == 0) {
+        try self.setOverflow(ctx);
+        return;
+    }
+
     return self.layoutFn(self.ctx, ctx, constraints, final_pass);
 }
 
@@ -83,6 +90,10 @@ pub fn layout(
 ///
 /// This function must only be called once as a final step of layouting.
 pub fn position(self: *const Self, ctx: *LayoutCtx, pos: Position) void {
+    // If this box has overflown, there's no point in setting it's
+    // position, as it shouldn't be used anyways.
+    if (self.data.overflow)
+        return;
     self.positionFn(self.ctx, ctx, pos);
 }
 
@@ -92,3 +103,14 @@ pub fn children(self: *const Self, ctx: *LayoutCtx) !?ChildList {
     return f(self.ctx, ctx);
 }
 
+/// Sets the overflow flag for this Box as well as all children.
+pub fn setOverflow(self: *const Self, ctx: *LayoutCtx) !void {
+    ctx.overflow = true;
+    self.data.overflow = true;
+    if (try self.children(ctx)) |ch| {
+        defer ch.deinit();
+        for (ch.boxes) |child| {
+            try child.setOverflow(ctx);
+        }
+    }
+}
