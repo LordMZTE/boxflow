@@ -49,6 +49,7 @@ pub fn deinit(self: *Self) void {
 }
 
 fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) anyerror!void {
+    _ = final_pass;
     switch (self.direction) {
         .vertical => {
             // the maximum width of the children
@@ -111,12 +112,9 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) any
                             .height = child_height,
                         });
 
-                        // TODO: really only layout children on the final pass?
-                        if (final_pass) {
-                            try child.layout(ctx, child_cons, true);
-                            if (!child.data.overflow)
-                                try child_cons.assertFits(child.data.size);
-                        }
+                        try child.layout(ctx, child_cons, true);
+                        if (!child.data.overflow)
+                            try child_cons.assertFits(child.data.size);
                     }
 
                     self.child_offsets[i] = cur_pos;
@@ -192,12 +190,9 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) any
                             .height = child.data.size.height,
                         });
 
-                        // TODO: really only layout children on the final pass?
-                        if (final_pass) {
-                            try child.layout(ctx, child_cons, true);
-                            if (!child.data.overflow)
-                                try child_cons.assertFits(child.data.size);
-                        }
+                        try child.layout(ctx, child_cons, true);
+                        if (!child.data.overflow)
+                            try child_cons.assertFits(child.data.size);
                     }
 
                     self.child_offsets[i] = cur_pos;
