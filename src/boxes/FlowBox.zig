@@ -90,7 +90,7 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) any
                 }
 
                 // set the extra space to the part of remaining space the boxes will get
-                for (flex_extra_space) |*fes, i| {
+                for (flex_extra_space, 0..) |*fes, i| {
                     if (self.children[i].data.flex_expand > 0) {
                         fes.* = @intToFloat(f64, self.children[i].data.flex_expand) / flex_sum;
                     }
@@ -104,7 +104,7 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) any
                 }
 
                 // re-layout the flex children with tight constraints
-                for (self.children) |*child, i| {
+                for (self.children, 0..) |*child, i| {
                     if (flex_extra_space[i]) |fes| {
                         const child_height = @floatToInt(usize, fes) + child.data.size.height;
                         const child_cons = Constraints.tight(.{
@@ -168,7 +168,7 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) any
                 }
 
                 // set the extra space to the part of remaining space the boxes will get
-                for (flex_extra_space) |*fes, i| {
+                for (flex_extra_space, 0..) |*fes, i| {
                     if (self.children[i].data.flex_expand > 0) {
                         fes.* = @intToFloat(f64, self.children[i].data.flex_expand) / flex_sum;
                     }
@@ -182,7 +182,7 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) any
                 }
 
                 // re-layout the flex children with tight constraints
-                for (self.children) |*child, i| {
+                for (self.children, 0..) |*child, i| {
                     if (flex_extra_space[i]) |fes| {
                         const child_width = @floatToInt(usize, fes) + child.data.size.width;
                         const child_cons = Constraints.tight(.{
@@ -210,7 +210,7 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) any
 }
 
 fn position(self: *Self, ctx: *LayoutCtx, pos: Position) void {
-    for (self.children) |child, i| {
+    for (self.children, 0..) |child, i| {
         if (child.data.overflow)
             continue;
 

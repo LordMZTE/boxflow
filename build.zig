@@ -4,9 +4,8 @@ pub fn build(b: *std.build.Builder) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    b.addModule(.{
-        .name = "boxflow",
-        .source = .{ .path = "src/main.zig" },
+    _ = b.addModule("boxflow", .{
+        .source_file = .{ .path = "src/main.zig" },
     });
 
     const main_tests = b.addTest(.{

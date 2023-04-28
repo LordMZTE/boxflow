@@ -53,7 +53,7 @@ fn position(self: *Self, ctx: *LayoutCtx, pos: Position) void {
     const col_width = self.data.size.width / self.cols;
     const row_height = self.data.size.height / rows;
 
-    for (self.children) |child, i| {
+    for (self.children, 0..) |child, i| {
         if (child.data.overflow)
             continue;
 
