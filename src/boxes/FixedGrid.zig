@@ -57,8 +57,8 @@ fn position(self: *Self, ctx: *LayoutCtx, pos: Position) void {
         if (child.data.overflow)
             continue;
 
-        const x = (i % self.cols) * col_width;
-        const y = @divFloor(i, rows) * row_height;
+        const x = pos.x + (i % self.cols) * col_width;
+        const y = pos.y + @divFloor(i, rows) * row_height;
 
         child.position(ctx, .{ .x = x, .y = y });
     }
