@@ -63,7 +63,7 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) any
                     child_cons.max.height -|= cur_pos;
                     child_cons.min.height -|= cur_pos;
 
-                    try child.layout(ctx, child_cons, false);
+                    try child.layout(ctx, child_cons, child.data.flex_expand == 0);
                     try child_cons.assertFits(child.data.size);
 
                     cur_pos += child.data.size.height;
@@ -141,7 +141,7 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) any
                     child_cons.max.width -|= cur_pos;
                     child_cons.min.width -|= cur_pos;
 
-                    try child.layout(ctx, child_cons, false);
+                    try child.layout(ctx, child_cons, child.data.flex_expand == 0);
                     try child_cons.assertFits(child.data.size);
 
                     cur_pos += child.data.size.width;
