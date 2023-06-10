@@ -38,7 +38,8 @@ pub fn init(ctx: *LayoutCtx, direction: Direction, children: []const Box) !Self 
         .child_offsets = try ctx.alloc.alloc(usize, children.len),
     };
 
-    std.mem.set(usize, self.child_offsets, 0);
+    for (self.child_offsets) |*off|
+        off.* = 0;
 
     return self;
 }
@@ -82,7 +83,8 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) any
                 // the amount of extra space that will be added to the flex boxes
                 const flex_extra_space = try ctx.alloc.alloc(?f64, self.children.len);
                 defer ctx.alloc.free(flex_extra_space);
-                std.mem.set(?f64, flex_extra_space, null);
+                for (flex_extra_space) |*es|
+                    es.* = null;
 
                 var flex_sum: f64 = 0;
                 for (self.children) |child| {
@@ -160,7 +162,8 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) any
                 // the amount of extra space that will be added to the flex boxes
                 const flex_extra_space = try ctx.alloc.alloc(?f64, self.children.len);
                 defer ctx.alloc.free(flex_extra_space);
-                std.mem.set(?f64, flex_extra_space, null);
+                for (flex_extra_space) |*es|
+                    es.* = null;
 
                 var flex_sum: f64 = 0;
                 for (self.children) |child| {
