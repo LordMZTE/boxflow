@@ -31,8 +31,8 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) any
         .min = .{
             // ensure that we don't get incorrect constraints when the
             // padded constraints are smaller than our minimum
-            .width = std.math.min(cons.min.width, child_max.width),
-            .height = std.math.min(cons.min.height, child_max.height),
+            .width = @min(cons.min.width, child_max.width),
+            .height = @min(cons.min.height, child_max.height),
         },
         .max = child_max,
     };
