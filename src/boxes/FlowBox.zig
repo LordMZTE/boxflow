@@ -86,27 +86,27 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) any
 
                 var flex_sum: f64 = 0;
                 for (self.children) |child| {
-                    flex_sum += @floatFromInt(f64, child.data.flex_expand);
+                    flex_sum += @floatFromInt(child.data.flex_expand);
                 }
 
                 // set the extra space to the part of remaining space the boxes will get
                 for (flex_extra_space, 0..) |*fes, i| {
                     if (self.children[i].data.flex_expand > 0) {
-                        fes.* = @floatFromInt(f64, self.children[i].data.flex_expand) / flex_sum;
+                        fes.* = @as(f64, @floatFromInt(self.children[i].data.flex_expand)) / flex_sum;
                     }
                 }
 
                 // set the extra space of the widgets to the actual absolute amount of space
                 for (flex_extra_space) |*espace| {
                     if (espace.*) |*fes| {
-                        fes.* *= @floatFromInt(f64, remaining_space);
+                        fes.* *= @floatFromInt(remaining_space);
                     }
                 }
 
                 // re-layout the flex children with tight constraints
                 for (self.children, 0..) |*child, i| {
                     if (flex_extra_space[i]) |fes| {
-                        const child_height = @intFromFloat(usize, fes) + child.data.size.height;
+                        const child_height = @as(usize, @intFromFloat(fes)) + child.data.size.height;
                         const child_cons = Constraints.tight(.{
                             .width = child.data.size.width,
                             .height = child_height,
@@ -164,27 +164,27 @@ fn layout(self: *Self, ctx: *LayoutCtx, cons: Constraints, final_pass: bool) any
 
                 var flex_sum: f64 = 0;
                 for (self.children) |child| {
-                    flex_sum += @floatFromInt(f64, child.data.flex_expand);
+                    flex_sum += @floatFromInt(child.data.flex_expand);
                 }
 
                 // set the extra space to the part of remaining space the boxes will get
                 for (flex_extra_space, 0..) |*fes, i| {
                     if (self.children[i].data.flex_expand > 0) {
-                        fes.* = @floatFromInt(f64, self.children[i].data.flex_expand) / flex_sum;
+                        fes.* = @as(f64, @floatFromInt(self.children[i].data.flex_expand)) / flex_sum;
                     }
                 }
 
                 // set the extra space of the widgets to the actual absolute amount of space
                 for (flex_extra_space) |*espace| {
                     if (espace.*) |*fes| {
-                        fes.* *= @floatFromInt(f64, remaining_space);
+                        fes.* *= @floatFromInt(remaining_space);
                     }
                 }
 
                 // re-layout the flex children with tight constraints
                 for (self.children, 0..) |*child, i| {
                     if (flex_extra_space[i]) |fes| {
-                        const child_width = @intFromFloat(usize, fes) + child.data.size.width;
+                        const child_width = @as(usize, @intFromFloat(fes)) + child.data.size.width;
                         const child_cons = Constraints.tight(.{
                             .width = child_width,
                             .height = child.data.size.height,

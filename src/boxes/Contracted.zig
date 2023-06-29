@@ -61,7 +61,7 @@ fn position(self: *Self, ctx: *LayoutCtx, pos: Position) void {
 
 fn children(self: *Self, ctx: *LayoutCtx) anyerror!?ChildList {
     _ = ctx;
-    return .{ .boxes = @ptrCast([*]const Box, &self.child)[0..1] };
+    return .{ .boxes = @as([*]const Box, @ptrCast(&self.child))[0..1] };
 }
 
 pub fn box(self: *Self) Box {

@@ -43,11 +43,11 @@ pub fn init(
         .ctx = ctx,
         .data = data,
 
-        .layoutFn = @ptrCast(*const LayoutFn, &layoutFn),
-        .positionFn = @ptrCast(*const PositionFn, &positionFn),
+        .layoutFn = @ptrCast(&layoutFn),
+        .positionFn = @ptrCast(&positionFn),
         .childrenFn = blk: {
             const f = childrenFn orelse break :blk null;
-            break :blk @ptrCast(*const ChildrenFn, &f);
+            break :blk @ptrCast(&f);
         },
     };
 }
